@@ -2,10 +2,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
+import vercel from '@astrojs/vercel';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://soulsspeedruns.com',
   output: 'static',
+
   integrations: [
       starlight({
           customCss: [
@@ -39,5 +42,7 @@ export default defineConfig({
             {slug: 'eldenring'},
           ],
       }),
-	],
+    ],
+
+  adapter: vercel(),
 });
