@@ -2,11 +2,14 @@
 title: Downpatching
 hidden: false
 ---
+
+import { YouTube } from 'astro-embed';
+
 Downpatching is a method in [**Elden Ring**](/eldenring) to return the game to a previous version. The best way to downpatch the game is to use the Steam Console to download various depots containing previous versions of the game. Typically offline downpatched versions are used in sync with [**EAC Bypass**](https://soulsspeedruns.com/eldenring/eac-bypass) & [**No Logo mod**](https://github.com/bladecoding/DarkSouls3RemoveIntroScreens/releases/).
 
 ## Tutorial
 
-Before proceeding, we recommend always backing up local copies of your Elden Ring installation, as well as backing up your save files. This will make both restoring your installation when something goes wrong and switching back and forth between different versions much easier. The installation location is: Steam\steamapps\common\ELDEN RING. Your save file is located in \Users<yourname>\AppData\Roaming\EldenRing<numbers>\ER0000.sl2
+Before proceeding, we recommend always backing up local copies of your Elden Ring installation, as well as backing up your save files. This will make both restoring your installation when something goes wrong and switching back and forth between different versions much easier. The installation location is: `Steam\steamapps\common\ELDEN RING`. Your save file is located in `\Users\[yourname]\AppData\Roaming\EldenRing\[numbers]\ER0000.sl2`
 
 - Launch Steam (**NOT** Offline Mode)
 - Press the **Windows Key** + **R**. This will open the Run window.
@@ -17,7 +20,7 @@ Before proceeding, we recommend always backing up local copies of your Elden Rin
   Refer to the table below for an overview of versions and depots.
 - Steam will now download the depot. Note: There is no progress bar of the download in Steam, but it is still downloading in the background. You can confirm this by checking Steam's network usage in either the Downloads tab in Steam or via Task Manager.
   You can ignore any other information displayed in console. It is most likely unrelated to the downpatching process.
-- Delete your save file ER0000.sl2 in AppData (make sure to backup saves with the [SoulsSpeedruns Save Organizer](https://github.com/Kahmul/SoulsSpeedruns-Save-Organizer/releases)). AppData is hidden by default. To locate it, press Windows Key + R, type **%appdata%** and hit enter or: open File Explorer > View > Hidden Items and follow C:\Users<your username>\AppData\Roaming\Elden Ring<numbers>.
+- Delete your save file ER0000.sl2 in AppData (make sure to backup saves with the [SoulsSpeedruns Save Organizer](https://github.com/Kahmul/SoulsSpeedruns-Save-Organizer/releases)). AppData is hidden by default. To locate it, press Windows Key + R, type **%appdata%** and hit enter or: open File Explorer > View > Hidden Items and follow `C:\Users\[your username]\AppData\Roaming\EldenRing\[numbers]`.
   (**For Windows 11 users: Restart your PC after deleting your Elden Ring save!)**
 - Turn off Steam Cloud synchronization in Steam > Settings > Cloud in order to prevent Steam from attempting to automatically import cloud saves.
 - Return back to the Steam console. Once the download is complete, it should present a temporary local directory in which the depot has been stored. This is usually something like C:\Program Files (x86)\Steam\steamapps\content\app_XXXXXX\depot_XXXXXX. Back up this game folder as well.
@@ -28,7 +31,7 @@ Before proceeding, we recommend always backing up local copies of your Elden Rin
 
 ## Tutorial Video
 
-{% youtube src="https://www.youtube.com/watch?v=0W_152p_daU" /%}
+<YouTube id="https://www.youtube.com/watch?v=0W_152p_daU" />
 
 ## Depot Overview
 
