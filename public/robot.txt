@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://soulsspeedruns/sitemap-index.xml

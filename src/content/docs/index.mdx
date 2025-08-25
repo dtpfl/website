@@ -1,0 +1,40 @@
+---
+title: Welcome to the SoulsSpeedruns Wiki
+description: A wiki for the SoulsSpeedruns community
+template: splash
+hero:
+  tagline: Welcome to the SoulsSpeedruns Wiki!
+  image:
+    file: ../../images/SoulsSpeedrunsLogo.png
+  actions:
+    - text: SoulsSpeedruns Discord
+      link: https://discord.com/invite/6v5Z63zEQv
+      icon: discord
+    - text: How to contribute
+      link: /contributing
+      icon: pencil
+      variant: minimal
+---
+
+import GameGrid from '../../components/GameGrid.astro';
+import bloodborne from '../../images/games/bloodborne/assets/background.jpg';
+import darksouls from '../../images/games/darksouls/assets/background.jpg';
+import darksouls2 from '../../images/games/darksouls2/assets/background.jpg';
+import darksouls3 from '../../images/games/darksouls3/assets/background.jpg';
+import demonssouls from '../../images/games/demonssouls/assets/background.jpg';
+import desremake from '../../images/games/desremake/assets/background.jpg';
+import ds1remaster from '../../images/games/ds1remaster/assets/background.jpg';
+import ds2sotfs from '../../images/games/ds2sotfs/assets/background.jpg';
+import eldenring from '../../images/games/eldenring/assets/background.jpg';
+
+<GameGrid games={[
+	{ title: "Bloodborne", href: "/bloodborne", imageSrc: bloodborne.src },
+	{ title: "Dark Souls", href: "/darksouls", imageSrc: darksouls.src },
+	{ title: "Dark Souls II", href: "/darksouls2", imageSrc: darksouls2.src },
+	{ title: "Dark Souls III", href: "/darksouls3", imageSrc: darksouls3.src },
+	{ title: "Demon's Souls", href: "/demonssouls", imageSrc: demonssouls.src },
+	{ title: "Demon's Souls Remake", href: "/desremake", imageSrc: desremake.src },
+	{ title: "Dark Souls Remastered", href: "/ds1remaster", imageSrc: ds1remaster.src },
+	{ title: "Dark Souls II: Scholar of the First Sin", href: "/ds2sotfs", imageSrc: ds2sotfs.src },
+	{ title: "Elden Ring", href: "/eldenring", imageSrc: eldenring.src }
+]} />

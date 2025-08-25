@@ -1,15 +1,5 @@
 {
-	"extends": "astro/tsconfigs/strict",
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"jsxImportSource": "react",
-		"baseUrl": ".",
-		"noErrorTruncation": true,
-		"paths": {
-			"@/*": ["./src/*"],
-			"$dist/*": ["./dist/*"],
-			"keystatic.config": ["keystatic.config.tsx"]
-		}
-	},
-	"exclude": ["public/pagefind", "dist"]
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }
