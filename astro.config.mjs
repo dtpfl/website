@@ -24,11 +24,13 @@ export default defineConfig({
               alt: 'SoulsSpeedruns Logo',
           },
           social: [
-              { icon: 'twitter', label: 'Twitter', href: 'https://twitter.com/SoulsSpeedruns' },
-              { icon: 'discord', label: 'Discord', href: 'https://discord.soulsspeedruns.com/' },
-              { icon: 'github', label: 'GitHub', href: 'https://github.com/soulsspeedruns/website' },
-              { icon: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@SoulsSpeedruns' },
-              { icon: 'twitch', label: 'Twitch', href: 'https://www.twitch.tv/SoulsSpeedruns' },
+            { icon: 'blueSky', label: 'BlueSky', href: 'https://bsky.app/profile/soulsspeedruns.bsky.social' },
+            { icon: 'twitter', label: 'Twitter', href: 'https://twitter.com/SoulsSpeedruns' },
+            { icon: 'discord', label: 'Discord', href: 'https://discord.soulsspeedruns.com/' },
+            { icon: 'github', label: 'GitHub', href: 'https://github.com/soulsspeedruns/website' },
+            { icon: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@SoulsSpeedruns' },
+            { icon: 'twitch', label: 'Twitch', href: 'https://www.twitch.tv/SoulsSpeedruns' },
+              
           ],
           sidebar: [
             {slug: 'bloodborne'}, 
