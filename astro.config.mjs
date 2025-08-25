@@ -5,12 +5,12 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://soulsspeedruns.com',
-  customCss: [
-	'./src/styles/global.css',
-  ],
-
+  output: 'static',
   integrations: [
       starlight({
+          customCss: [
+              './src/styles/custom.css',
+          ],
           favicon: '/favicon.ico',
           title: 'SoulsSpeedruns Wiki',
           editLink: {

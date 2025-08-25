@@ -1,0 +1,16 @@
+@layer base, starlight, theme, components, utilities;
+
+/* Dark mode colors. */
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #361d00;
+	--sl-color-accent: #fb923c;
+	--sl-color-accent-high: rgb(253 186 116);
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #eceef2;
+	--sl-color-gray-2: #c0c2c7;
+	--sl-color-gray-3: #888b96;
+	--sl-color-gray-4: #545861;
+	--sl-color-gray-5: #353841;
+	--sl-color-gray-6: #24272f;
+	--sl-color-black: #17181c;
+}
