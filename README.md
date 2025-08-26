@@ -6,7 +6,7 @@
 
 ## 📚 Where to Find Your Documentation
 
-**For non-technical users:** All the content that appears on your website is stored in the **`src/content/docs`** folder. Think of this as your website's "content library" - when you want to add new information, edit existing guides, or update any text on your site, you'll work with files in this folder.
+**For non-technical users:** All the content that appears on your website is stored in the **[`src/content/docs`](/src/content/docs)** folder. Think of this as your website's "content library" - when you want to add new information, edit existing guides, or update any text on your site, you'll work with files in this folder.
 
 - **`src/content/docs`** = This is where all your website's text, guides, and information lives
 - When you edit files here, your website automatically updates
