@@ -1,12 +1,16 @@
-# Starlight Starter Kit: Basics
+# SoulsSpeedruns Wiki
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+<p align="center">
+  <img src="src/images/SoulsSpeedrunsLogo.png" alt="SoulsSpeedruns Logo" width="200">
+</p>
 
-```
-pnpm create astro@latest -- --template starlight
-```
+## 📚 Where to Find Your Documentation
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+**For non-technical users:** All the content that appears on your website is stored in the **`src/content/docs`** folder. Think of this as your website's "content library" - when you want to add new information, edit existing guides, or update any text on your site, you'll work with files in this folder.
+
+- **`src/content/docs`** = This is where all your website's text, guides, and information lives
+- When you edit files here, your website automatically updates
+- This is the main place you'll need to know about if you want to manage your website's content
 
 ## 🚀 Project Structure
 
