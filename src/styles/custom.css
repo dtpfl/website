@@ -1,8 +1,11 @@
-@layer base, starlight, theme, components, utilities;
+@layer starlight, ssTheme;
 
-/* Dark mode colors. */
-:root[data-theme='dark'] {
-	--sl-color-accent-low: #361d00;
+@layer ssTheme {
+
+  /* Dark mode colors. */
+
+  :root[data-theme="dark"] {
+    --sl-color-accent-low: #361d00;
 	--sl-color-accent: #fb923c;
 	--sl-color-accent-high: rgb(253 186 116);
 	--sl-color-white: #ffffff;
@@ -13,4 +16,62 @@
 	--sl-color-gray-5: #353841;
 	--sl-color-gray-6: #24272f;
 	--sl-color-black: #17181c;
+	--sl-color-bg-sidebar: #202937;
+	--sl-color-bg: #202937;
+  }
+
+
+  :root {
+    --temp--toc-total-width: calc(
+      var(--__toc-width, var(--sl-sidebar-width))
+        /* actual sidebar width or fallback */ +
+        (2 * var(--__toc-width, 1.5rem))
+        /* extra padding/margins for TOC area */
+    );
+
+    --temp--available-space: calc(
+      100% - var(--temp--toc-total-width)
+        /* subtract full sidebar+TOC width */ -
+        var(--sl-content-inline-start, 0rem) /* subtract content indent */ -
+        var(--sl-content-width) /* subtract content block width */
+    );
+
+    /* finally center that remaining space (divide by 2) and subtract fixed 1.5rem gap */
+    --sidebar-margin-left: max(
+      0rem,
+      calc((var(--temp--available-space) / 2) - 1.5rem)
+    );
+  }
+
+  @media (min-width: 800px) {
+    :root {
+      --sl-nav-pad-x: calc(1.5rem + var(--sidebar-margin-left));
+    }
+  }
+
+  /* Sidebar */
+
+  @media (min-width: 800px) {
+    .sidebar-pane {
+      margin-left: var(--sidebar-margin-left);
+	  border-inline-end: 1px solid var(--sl-color-hairline);
+    }
+  }
+
+  @media (min-width: 50rem) {
+    :root {
+      --sl-sidebar-pad-x: 1.25rem;
+    }
+
+	site-search button{
+		max-width: none;
+	  }
+  }
+
+  .sidebar-content a {
+    font-size: 0.875rem;
+  }
+
+  
+
 }
