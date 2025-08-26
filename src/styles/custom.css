@@ -54,7 +54,7 @@
   @media (min-width: 800px) {
     .sidebar-pane {
       margin-left: var(--sidebar-margin-left);
-	  border-inline-end: 1px solid var(--sl-color-hairline);
+	    border-inline-end: 1px solid var(--sl-color-hairline);
     }
   }
 
@@ -72,6 +72,17 @@
     font-size: 0.875rem;
   }
 
-  
+  header.header {
+    background-color: var(--sl-color-bg-sidebar);
+  }
+
+  .hero {
+    padding-block: 1rem;
+  }
+
+  .hero img {
+    width: 10rem;
+    height: auto;
+  }
 
 }
