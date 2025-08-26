@@ -85,4 +85,19 @@
     height: auto;
   }
 
+  .title-wrapper {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+  }
+
+  .title-wrapper .site-title {
+    font-size: 1rem;
+    padding-inline: 1rem;
+  }
+
+  .title-wrapper .site-title img {
+    width: 1.5rem;
+    height: auto;
+  }
+
 }
