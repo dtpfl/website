@@ -4,13 +4,13 @@
   <img src="src/images/SoulsSpeedrunsLogo.png" alt="SoulsSpeedruns Logo" width="200">
 </p>
 
-## 📚 Where to Find Your Documentation
+## 📚 Want to Make Changes to This Website?
 
-**For non-technical users:** All the content that appears on your website is stored in the **[`src/content/docs`](/src/content/docs)** folder. Think of this as your website's "content library" - when you want to add new information, edit existing guides, or update any text on your site, you'll work with files in this folder.
+**For beginners:** If you're reading this website and want to suggest changes, add new guides, or fix information, here's where to start:
 
-- **`src/content/docs`** = This is where all your website's text, guides, and information lives
-- When you edit files here, your website automatically updates
-- This is the main place you'll need to know about if you want to manage your website's content
+- **`src/content/docs`** = This is where all the text and guides you see on the website are stored
+- When you edit files here, you're updating the source code (not the live website yet)
+- This is the main place you'll need to know about if you want to contribute changes
 
 ## 🚀 Project Structure
 
