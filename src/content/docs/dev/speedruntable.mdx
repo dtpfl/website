@@ -1,0 +1,27 @@
+---
+title: Speedrun Table 
+hidden: false
+---
+
+import SpeedRunTable from '../../../components/SpeedRunTable.astro';
+
+## Bloodborne Speedruns
+
+<SpeedRunTable game="bloodborne" />
+
+
+## How it works
+
+The component now accepts a `game` parameter and automatically converts it to the appropriate ID:
+
+- `bloodborne` → `9d3kqg1l`
+- `darksouls` → `w6jve26j`
+- `darksouls2` → `m1zky010`
+- `darksouls3` → `k6qg0xdg`
+- `demonssouls` → `m1mn8kd2`
+- `ds1remaster` → `lde3woe6`
+- `ds2sotfs` → `j1l9qz1g`
+- `desremake` → `j1neogy1`
+- `eldenring` → `eldenring`
+
+The component fetches the appropriate speedrun data based on the game ID and displays it in a formatted table.

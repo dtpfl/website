@@ -1,0 +1,166 @@
+---
+export interface Props {
+	game: string;
+}
+
+const { game } = Astro.props;
+
+// Game ID mapping
+const GAME_IDS = {
+	bloodborne: "9d3kqg1l",
+	darksouls: "w6jve26j",
+	darksouls2: "m1zky010",
+	darksouls3: "k6qg0xdg",
+	demonssouls: "m1mn8kd2",
+	ds1remaster: "lde3woe6",
+	ds2sotfs: "j1l9qz1g",
+	desremake: "j1neogy1",
+	eldenring: "eldenring"
+};
+
+// Get game ID from game name
+const gameId = GAME_IDS[game.toLowerCase()] || game;
+
+// Sample data structure - in a real implementation, this would be fetched from an API
+const getSpeedrunData = (gameId: string) => {
+	// This is placeholder data - in production you'd fetch from speedrun.com API
+	const sampleData = {
+		"9d3kqg1l": [ // bloodborne
+			{
+				player: "Lorem Ipsum Dolor Sit Amet Amet adadasdas asdasdasdasdsa asdsad",
+				igt: "18:49",
+				date: "2024-01-15",
+				platform: "PS4"
+			},
+			{
+				player: "theworld0815",
+				igt: "22:12",
+				date: "2024-01-14",
+				platform: "PS4"
+			},
+			{
+				player: "Marchyy",
+				igt: "26:23",
+				date: "2024-01-13",
+				platform: "PS4"
+			},
+			{
+				player: "lGenso",
+				igt: "20:00",
+				date: "2024-01-13",
+				platform: "PS4"
+			},
+			{
+				player: "lGenso",
+				igt: "20:00",
+				date: "2024-01-13",
+				platform: "PS4"
+			}
+		],
+	};
+	
+	return sampleData[gameId] || [];
+};
+
+const runs = getSpeedrunData(gameId);
+---
+
+	<div class="speedrun-table-container">		
+		<div class="custom-table">
+			<div class="table-header">
+				<div class="header-cell">Pos.</div>
+				<div class="header-cell">Player</div>
+				<div class="header-cell">Date</div>
+				<div class="header-cell">Platform</div>
+				<div class="header-cell">IGT</div>
+			</div>
+			
+			{runs.map((run, index) => (
+				<div class="table-row">
+					<div class="table-cell position-cell">
+						<span class={`position-number ${index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : ''}`}>
+							{index + 1}.
+						</span>
+					</div>
+					<div class="table-cell">{run.player}</div>
+					<div class="table-cell">{run.date}</div>
+					<div class="table-cell">{run.platform}</div>
+					<div class="table-cell">{run.igt}</div>
+				</div>
+			))}
+		</div>
+		
+		<div style="background: var(--sl-color-gray-3); border-radius: 4px;">
+			<a href="https://speedrun.com" target="_blank" rel="noopener noreferrer"><img src="/pages/assets/speedrun.svg" alt="Speedrun.com" style="height: 32px; width: auto;  padding: 0.5rem 1rem;" /></a>
+		</div>
+	</div>
+
+<style>
+
+	.custom-table {
+		width: 100%;
+		border-collapse: collapse;
+		overflow-x: auto;
+	}
+	
+	.table-header, .table-row {
+		display: table-row;
+		width: 100%;
+	}
+	
+	.header-cell, .table-cell {
+		display: table-cell;
+		padding: 0.5rem;
+		text-align: left;
+		border-bottom: 1px solid var(--sl-color-gray-5);
+	}
+	
+	.header-cell {
+		font-weight: 600;
+	}
+	
+	/* Make Player column expand to fill available space */
+	.header-cell:nth-child(2), .table-cell:nth-child(2) {
+		width: 100%;
+		font-weight: 600;
+	}
+	
+	/* Keep other columns at natural width */
+	.header-cell:nth-child(1), .table-cell:nth-child(1) { /* Position */
+		width: auto;
+	}
+	
+	.header-cell:nth-child(3), .table-cell:nth-child(3) { /* Date */
+		width: auto;
+	}
+	
+	.header-cell:nth-child(4), .table-cell:nth-child(4) { /* Platform */
+		width: auto;
+	}
+	
+	.header-cell:nth-child(5), .table-cell:nth-child(5) { /* IGT */
+		width: auto;
+		text-align: right;
+		padding-right: 1rem;
+	}
+	
+	.position-number {
+		font-weight: bold;
+		color: var(--sl-color-gray-8);
+	}
+	
+	.position-number.gold {
+		color: gold;
+	}
+	
+	.position-number.silver {
+		color: silver;
+	}
+	
+	.position-number.bronze {
+		color: #cd7f32;
+	}
+
+	
+</style>
+
