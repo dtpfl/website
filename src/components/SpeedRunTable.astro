@@ -1,31 +1,135 @@
 ---
 export interface Props {
 	game: string;
+	category?: string; // Can be either category ID or category name
+	showCategorySelector?: boolean; // Controls visibility of category dropdown
 }
 
-const { game } = Astro.props;
+const { game, category, showCategorySelector = false } = Astro.props;
+
+// Type definitions
+interface Category {
+	id: string;
+	name: string;
+}
+
+interface SpeedrunRun {
+	player: string;
+	igt: string;
+	date: string;
+	platform: string;
+	category?: string; // Optional since it's not displayed in table
+}
 
 // Game ID mapping
-const GAME_IDS = {
+const GAME_IDS: Record<string, string> = {
 	bloodborne: "9d3kqg1l",
 	darksouls: "w6jve26j",
 	darksouls2: "m1zky010",
 	darksouls3: "k6qg0xdg",
 	demonssouls: "m1mn8kd2",
 	ds1remaster: "lde3woe6",
-	ds2sotfs: "j1l9qz1g",
+	ds2sotfs: "y65lw01e",
 	desremake: "j1neogy1",
-	eldenring: "eldenring"
+	eldenring: "nd28z0ed"
+};
+
+// Category definitions for each game
+const GAME_CATEGORIES: Record<string, Category[]> = {
+	eldenring: [
+		{ id: "02qr00pk", name: "Any%" },
+		{ id: "jdr4mmn2", name: "Defeat Consort" },
+		{ id: "mke64j2d", name: "Two Gods" },
+		{ id: "jdzzjjrd", name: "All Remembrances" },
+		{ id: "824833gk", name: "All Remembrances (No DLC)" },
+		{ id: "7dgpjjgd", name: "Console" },
+		{ id: "7kjwnn3d", name: "All Achievements" },
+		{ id: "mkey0882", name: "Any% No Wrong Warp (Archived)" },
+		{ id: "wdmrgrxk", name: "Deprecated" }
+	],
+	// Add other games' categories as needed
+	bloodborne: [
+		{ id: "wk6l0pk1", name: "Any% Current Patch" },
+		{ id: "xd1rqzrk", name: "All Bosses" },
+		{ id: "w20omz2n", name: "Any% Glitchless" },
+		{ id: "7dg693gk", name: "All Bosses Glitchless" },
+		{ id: "jdr1zol2", name: "Any% Blood Level 4" },
+		{ id: "vdoql56k", name: "All Bosses Blood Level 4" },
+		{ id: "02q8vz92", name: "All Trophies" }
+	],
+	darksouls: [
+		{ id: "7dg75ld4", name: "Any% No Wrong Warp" },
+		{ id: "xk9zng20", name: "Any% Force Quit" },
+		{ id: "mke7jn26", name: "All Bosses" },
+		{ id: "zd3l9qnd", name: "All Achievements" },
+		{ id: "xd1e44r2", name: "100%" },
+		{ id: "ndx1pwo2", name: "Soul Level 1" },
+		{ id: "mke153n2", name: "New Game+" },
+		{ id: "wdm841e2", name: "Artorias of the Abyss" },
+		{ id: "vdo3qe6d", name: "Least Bosses" },
+		{ id: "zdn107qk", name: "Lord of the Rings" },
+		{ id: "5dw8yrgd", name: "All Bosses No DLC" }
+	],
+	darksouls2: [
+		{ id: "jdzv9gkv", name: "Any% Current Patch" },
+		{ id: "xk9nr620", name: "All Bosses" },
+		{ id: "5dw84ndg", name: "Old Souls (CP)" },
+		{ id: "824x47wd", name: "All Bosses No DLC" },
+		{ id: "q258ngg2", name: "All Achievements" }
+	],
+	darksouls3: [
+		{ id: "7kjz1ond", name: "All Bosses" },
+		{ id: "jdz6v9v2", name: "Any% Glitchless" },
+		{ id: "02qml3pd", name: "All Bosses Glitchless" },
+		{ id: "xk9lx0gk", name: "Any% Restricted" },
+		{ id: "jdzvw3xk", name: "Any% CP" },
+		{ id: "xk9r81gk", name: "All Bosses (No DLC)" },
+		{ id: "vdoqy06k", name: "All Bosses (SL1)" }
+	],
+	demonssouls: [
+		{ id: "wk64grxd", name: "Any% Glitchless" },
+		{ id: "9d83j762", name: "Any% SL1" },
+		{ id: "w20zlmjd", name: "All Trophies" },
+		{ id: "ndxpx5o2", name: "Any% Glitchless (RTA Legacy)" }
+	],
+	ds1remaster: [
+		{ id: "ndx1pm52", name: "Any%" },
+		{ id: "wdm84w52", name: "No Wrong Warp" },
+		{ id: "xd173pzd", name: "Any% Force Quit" },
+		{ id: "vdo3qoyd", name: "All Bosses" },
+		{ id: "w20vqvvk", name: "All Achievements" },
+		{ id: "xd1vlqzd", name: "Glitchless" },
+		{ id: "9d839032", name: "Soul Level 1" }
+	],
+	ds2sotfs: [
+		{ id: "zdnwmlqd", name: "Old Souls" },
+		{ id: "zd3ernkn", name: "All Bosses" },
+		{ id: "xd11mjzd", name: "All Achievements" }
+	],
+	desremake: [
+		{ id: "rkl3386k", name: "Any% Glitchless" },
+		{ id: "z274l4g2", name: "Any% Force Quit" },
+		{ id: "vdoxoj1d", name: "Any% SL1" },
+		{ id: "9kv66ge2", name: "Offline Trophies" }
+	]
 };
 
 // Get game ID from game name
 const gameId = GAME_IDS[game.toLowerCase()] || game;
 
+// Get categories for the current game
+const categories = GAME_CATEGORIES[game.toLowerCase()] || [];
+
+// Find the selected category (by ID or name)
+const selectedCategory = category ? categories.find(cat => 
+	cat.id === category || cat.name === category
+) : null;
+
 // Sample data structure - in a real implementation, this would be fetched from an API
-const getSpeedrunData = (gameId: string) => {
+const getSpeedrunData = (gameId: string, categoryId?: string): SpeedrunRun[] => {
 	// This is placeholder data - in production you'd fetch from speedrun.com API
-	const sampleData = {
-		"9d3kqg1l": [ // bloodborne
+	const sampleData: Record<string, SpeedrunRun[]> = {
+		"nd28z0ed": [ // eldenring
 			{
 				player: "Lorem Ipsum Dolor Sit Amet Amet adadasdas asdasdasdasdsa asdsad",
 				igt: "18:49",
@@ -62,10 +166,25 @@ const getSpeedrunData = (gameId: string) => {
 	return sampleData[gameId] || [];
 };
 
-const runs = getSpeedrunData(gameId);
+const runs = getSpeedrunData(gameId, category);
 ---
 
-	<div class="speedrun-table-container">		
+	<div class="speedrun-table-container">
+		<!-- Category selector if enabled and categories exist -->
+		{showCategorySelector && categories.length > 0 && (
+			<div class="category-selector">
+				<label for="category-select">Category:</label>
+				<select id="category-select" class="category-dropdown">
+					<option value="" selected={!selectedCategory}>All Categories</option>
+					{categories.map((cat: Category) => (
+						<option value={cat.id} selected={selectedCategory?.id === cat.id}>
+							{cat.name}
+						</option>
+					))}
+				</select>
+			</div>
+		)}
+		
 		<div class="custom-table">
 			<div class="table-header">
 				<div class="header-cell">Pos.</div>
@@ -95,7 +214,38 @@ const runs = getSpeedrunData(gameId);
 		</div>
 	</div>
 
+<script>
+	// Handle category selection
+	document.addEventListener('DOMContentLoaded', () => {
+		const categorySelect = document.getElementById('category-select') as HTMLSelectElement;
+		if (categorySelect) {
+			categorySelect.addEventListener('change', (e) => {
+				const target = e.target as HTMLSelectElement;
+				const selectedCategory = target.value;
+				
+				if (selectedCategory === '') {
+					// All Categories selected
+					console.log('Selected category: All Categories');
+					// In a real implementation, you would fetch data for all categories
+				} else {
+					// Specific category selected
+					console.log('Selected category:', selectedCategory);
+					// In a real implementation, you would fetch data for the specific category
+				}
+				
+				// You could also update the URL or trigger a page refresh with the new category
+			});
+		}
+	});
+</script>
+
 <style>
+	.category-selector {
+		margin-bottom: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 
 	.custom-table {
 		width: 100%;
@@ -160,7 +310,5 @@ const runs = getSpeedrunData(gameId);
 	.position-number.bronze {
 		color: #cd7f32;
 	}
-
-	
 </style>
 

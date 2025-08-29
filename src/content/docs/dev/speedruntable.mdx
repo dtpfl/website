@@ -5,14 +5,27 @@ hidden: false
 
 import SpeedRunTable from '../../../components/SpeedRunTable.astro';
 
-## Bloodborne Speedruns
+## Elden Ring Speedruns (Default - No Category Selector)
 
-<SpeedRunTable game="bloodborne" />
+<SpeedRunTable game="eldenring" />
 
+## With Category Selector Enabled
+
+<SpeedRunTable game="eldenring" showCategorySelector={true} />
+
+## With Specific Category
+
+<SpeedRunTable game="eldenring" category="Any%" showCategorySelector={true} />
 
 ## How it works
 
-The component now accepts a `game` parameter and automatically converts it to the appropriate ID:
+The component accepts three parameters:
+
+- `game`: The game identifier (automatically converted to the appropriate Speedrun.com ID)
+- `category` (optional): A specific category - can be either the category ID or category name
+- `showCategorySelector` (optional): Controls visibility of the category dropdown (default: `false`)
+
+### Supported Games
 
 - `bloodborne` → `9d3kqg1l`
 - `darksouls` → `w6jve26j`
@@ -22,6 +35,60 @@ The component now accepts a `game` parameter and automatically converts it to th
 - `ds1remaster` → `lde3woe6`
 - `ds2sotfs` → `j1l9qz1g`
 - `desremake` → `j1neogy1`
-- `eldenring` → `eldenring`
+- `eldenring` → `nd28z0ed`
 
-The component fetches the appropriate speedrun data based on the game ID and displays it in a formatted table.
+### Elden Ring Categories
+
+When `showCategorySelector` is enabled, the component includes a dropdown selector for Elden Ring categories. You can specify a category using either:
+
+**By ID:**
+- `02qr00pk` - Any%
+- `jdr4mmn2` - Defeat Consort
+- `mke64j2d` - Two Gods
+- `jdzzjjrd` - All Remembrances
+- `824833gk` - All Remembrances (No DLC)
+- `7dgpjjgd` - Console
+- `7kjwnn3d` - All Achievements
+- `mkey0882` - Any% No Wrong Warp (Archived)
+- `wdmrgrxk` - Deprecated
+
+**By Name:**
+- `"Any%"`
+- `"Defeat Consort"`
+- `"Two Gods"`
+- `"All Remembrances"`
+- `"All Remembrances (No DLC)"`
+- `"Console"`
+- `"All Achievements"`
+- `"Any% No Wrong Warp (Archived)"`
+- `"Deprecated"`
+
+### Usage Examples
+
+```astro
+<!-- Default - no category selector, no category specified -->
+<SpeedRunTable game="eldenring" />
+
+<!-- With category selector enabled -->
+<SpeedRunTable game="eldenring" showCategorySelector={true} />
+
+<!-- With specific category and selector enabled -->
+<SpeedRunTable game="eldenring" category="Any%" showCategorySelector={true} />
+
+<!-- By category ID with selector -->
+<SpeedRunTable game="eldenring" category="02qr00pk" showCategorySelector={true} />
+
+<!-- By category name with selector -->
+<SpeedRunTable game="eldenring" category="All Remembrances" showCategorySelector={true} />
+```
+
+### Table Structure
+
+The component displays speedrun data in a table with the following columns:
+- **Position**: Ranking (1st, 2nd, 3rd with gold/silver/bronze styling)
+- **Player**: Player name
+- **Date**: Run completion date
+- **Platform**: Gaming platform used
+- **IGT**: In-Game Time
+
+The component fetches the appropriate speedrun data based on the game ID and category, displaying it in a formatted table. If no category is specified, the component will show data for all categories. The category selector is disabled by default and must be explicitly enabled with `showCategorySelector={true}`.
