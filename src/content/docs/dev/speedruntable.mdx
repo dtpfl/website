@@ -4,6 +4,7 @@ hidden: false
 ---
 
 import SpeedRunTable from '../../../components/SpeedRunTable.astro';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 ## Elden Ring Speedruns (Default - No Category Selector)
 
@@ -33,35 +34,201 @@ The component accepts three parameters:
 - `darksouls3` → `k6qg0xdg`
 - `demonssouls` → `m1mn8kd2`
 - `ds1remaster` → `lde3woe6`
-- `ds2sotfs` → `j1l9qz1g`
+- `ds2sotfs` → `y65lw01e`
 - `desremake` → `j1neogy1`
 - `eldenring` → `nd28z0ed`
 
-### Elden Ring Categories
+## Game Categories
 
-When `showCategorySelector` is enabled, the component includes a dropdown selector for Elden Ring categories. You can specify a category using either:
+<Tabs>
+  <TabItem label="Elden Ring">
+    ### Elden Ring Categories
+    
+    When `showCategorySelector` is enabled, the component includes a dropdown selector for Elden Ring categories. You can specify a category using either:
+    
+    **By ID:**
+    - `02qr00pk` - Any%
+    - `jdr4mmn2` - Defeat Consort
+    - `mke64j2d` - Two Gods
+    - `jdzzjjrd` - All Remembrances
+    - `824833gk` - All Remembrances (No DLC)
+    - `7dgpjjgd` - Console
+    - `7kjwnn3d` - All Achievements
+    - `mkey0882` - Any% No Wrong Warp (Archived)
+    - `wdmrgrxk` - Deprecated
+    
+    **By Name:**
+    - `"Any%"`
+    - `"Defeat Consort"`
+    - `"Two Gods"`
+    - `"All Remembrances"`
+    - `"All Remembrances (No DLC)"`
+    - `"Console"`
+    - `"All Achievements"`
+    - `"Any% No Wrong Warp (Archived)"`
+    - `"Deprecated"`
+  </TabItem>
 
-**By ID:**
-- `02qr00pk` - Any%
-- `jdr4mmn2` - Defeat Consort
-- `mke64j2d` - Two Gods
-- `jdzzjjrd` - All Remembrances
-- `824833gk` - All Remembrances (No DLC)
-- `7dgpjjgd` - Console
-- `7kjwnn3d` - All Achievements
-- `mkey0882` - Any% No Wrong Warp (Archived)
-- `wdmrgrxk` - Deprecated
+  <TabItem label="Bloodborne">
+    ### Bloodborne Categories
+    
+    **By ID:**
+    - `wk6l0pk1` - Any% Current Patch
+    - `xd1rqzrk` - All Bosses
+    - `w20omz2n` - Any% Glitchless
+    - `7dg693gk` - All Bosses Glitchless
+    - `jdr1zol2` - Any% Blood Level 4
+    - `vdoql56k` - All Bosses Blood Level 4
+    - `02q8vz92` - All Trophies
+    
+    **By Name:**
+    - `"Any% Current Patch"`
+    - `"All Bosses"`
+    - `"Any% Glitchless"`
+    - `"All Bosses Glitchless"`
+    - `"Any% Blood Level 4"`
+    - `"All Bosses Blood Level 4"`
+    - `"All Trophies"`
+  </TabItem>
 
-**By Name:**
-- `"Any%"`
-- `"Defeat Consort"`
-- `"Two Gods"`
-- `"All Remembrances"`
-- `"All Remembrances (No DLC)"`
-- `"Console"`
-- `"All Achievements"`
-- `"Any% No Wrong Warp (Archived)"`
-- `"Deprecated"`
+  <TabItem label="Dark Souls">
+    ### Dark Souls Categories
+    
+    **By ID:**
+    - `7dg75ld4` - Any% No Wrong Warp
+    - `xk9zng20` - Any% Force Quit
+    - `mke7jn26` - All Bosses
+    - `zd3l9qnd` - All Achievements
+    - `xd1e44r2` - 100%
+    - `ndx1pwo2` - Soul Level 1
+    - `mke153n2` - New Game+
+    - `wdm841e2` - Artorias of the Abyss
+    - `vdo3qe6d` - Least Bosses
+    - `zdn107qk` - Lord of the Rings
+    - `5dw8yrgd` - All Bosses No DLC
+    
+    **By Name:**
+    - `"Any% No Wrong Warp"`
+    - `"Any% Force Quit"`
+    - `"All Bosses"`
+    - `"All Achievements"`
+    - `"100%"`
+    - `"Soul Level 1"`
+    - `"New Game+"`
+    - `"Artorias of the Abyss"`
+    - `"Least Bosses"`
+    - `"Lord of the Rings"`
+    - `"All Bosses No DLC"`
+  </TabItem>
+
+  <TabItem label="Dark Souls 2">
+    ### Dark Souls 2 Categories
+    
+    **By ID:**
+    - `jdzv9gkv` - Any% Current Patch
+    - `xk9nr620` - All Bosses
+    - `5dw84ndg` - Old Souls (CP)
+    - `824x47wd` - All Bosses No DLC
+    - `q258ngg2` - All Achievements
+    
+    **By Name:**
+    - `"Any% Current Patch"`
+    - `"All Bosses"`
+    - `"Old Souls (CP)"`
+    - `"All Bosses No DLC"`
+    - `"All Achievements"`
+  </TabItem>
+
+  <TabItem label="Dark Souls 3">
+    ### Dark Souls 3 Categories
+    
+    **By ID:**
+    - `7kjz1ond` - All Bosses
+    - `jdz6v9v2` - Any% Glitchless
+    - `02qml3pd` - All Bosses Glitchless
+    - `xk9lx0gk` - Any% Restricted
+    - `jdzvw3xk` - Any% CP
+    - `xk9r81gk` - All Bosses (No DLC)
+    - `vdoqy06k` - All Bosses (SL1)
+    
+    **By Name:**
+    - `"All Bosses"`
+    - `"Any% Glitchless"`
+    - `"All Bosses Glitchless"`
+    - `"Any% Restricted"`
+    - `"Any% CP"`
+    - `"All Bosses (No DLC)"`
+    - `"All Bosses (SL1)"`
+  </TabItem>
+
+  <TabItem label="Demon's Souls">
+    ### Demon's Souls Categories
+    
+    **By ID:**
+    - `wk64grxd` - Any% Glitchless
+    - `9d83j762` - Any% SL1
+    - `w20zlmjd` - All Trophies
+    - `ndxpx5o2` - Any% Glitchless (RTA Legacy)
+    
+    **By Name:**
+    - `"Any% Glitchless"`
+    - `"Any% SL1"`
+    - `"All Trophies"`
+    - `"Any% Glitchless (RTA Legacy)"`
+  </TabItem>
+
+  <TabItem label="DS1 Remaster">
+    ### Dark Souls Remastered Categories
+    
+    **By ID:**
+    - `ndx1pm52` - Any%
+    - `wdm84w52` - No Wrong Warp
+    - `xd173pzd` - Any% Force Quit
+    - `vdo3qoyd` - All Bosses
+    - `w20vqvvk` - All Achievements
+    - `xd1vlqzd` - Glitchless
+    - `9d839032` - Soul Level 1
+    
+    **By Name:**
+    - `"Any%"`
+    - `"No Wrong Warp"`
+    - `"Any% Force Quit"`
+    - `"All Bosses"`
+    - `"All Achievements"`
+    - `"Glitchless"`
+    - `"Soul Level 1"`
+  </TabItem>
+
+  <TabItem label="DS2 SOTFS">
+    ### Dark Souls 2: Scholar of the First Sin Categories
+    
+    **By ID:**
+    - `zdnwmlqd` - Old Souls
+    - `zd3ernkn` - All Bosses
+    - `xd11mjzd` - All Achievements
+    
+    **By Name:**
+    - `"Old Souls"`
+    - `"All Bosses"`
+    - `"All Achievements"`
+  </TabItem>
+
+  <TabItem label="DES Remake">
+    ### Demon's Souls Remake Categories
+    
+    **By ID:**
+    - `rkl3386k` - Any% Glitchless
+    - `z274l4g2` - Any% Force Quit
+    - `vdoxoj1d` - Any% SL1
+    - `9kv66ge2` - Offline Trophies
+    
+    **By Name:**
+    - `"Any% Glitchless"`
+    - `"Any% Force Quit"`
+    - `"Any% SL1"`
+    - `"Offline Trophies"`
+  </TabItem>
+</Tabs>
 
 ### Usage Examples
 
@@ -80,6 +247,14 @@ When `showCategorySelector` is enabled, the component includes a dropdown select
 
 <!-- By category name with selector -->
 <SpeedRunTable game="eldenring" category="All Remembrances" showCategorySelector={true} />
+
+<!-- Bloodborne examples -->
+<SpeedRunTable game="bloodborne" showCategorySelector={true} />
+<SpeedRunTable game="bloodborne" category="All Bosses" showCategorySelector={true} />
+
+<!-- Dark Souls examples -->
+<SpeedRunTable game="darksouls" showCategorySelector={true} />
+<SpeedRunTable game="darksouls" category="Soul Level 1" showCategorySelector={true} />
 ```
 
 ### Table Structure
@@ -92,3 +267,11 @@ The component displays speedrun data in a table with the following columns:
 - **IGT**: In-Game Time
 
 The component fetches the appropriate speedrun data based on the game ID and category, displaying it in a formatted table. If no category is specified, the component will show data for all categories. The category selector is disabled by default and must be explicitly enabled with `showCategorySelector={true}`.
+
+### Category Selection
+
+When using the category selector, you can specify categories by either:
+1. **Category ID**: The unique identifier from speedrun.com (e.g., `"02qr00pk"`)
+2. **Category Name**: The display name of the category (e.g., `"Any%"`)
+
+Both methods work interchangeably, making it easy to reference categories in your documentation or code.
