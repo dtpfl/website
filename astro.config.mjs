@@ -33,13 +33,13 @@ export default defineConfig({
               
           ],
           sidebar: [
+            {label: 'Demon\'s Souls (2020)', autogenerate: {directory: 'demonssouls2020'}, badge: {text: 'New', variant: 'success'}},
             {slug: 'bloodborne', badge: 'Outdated'}, 
             {slug: 'darksouls', badge: 'Outdated'},
             {slug: 'darksouls2', badge: 'Outdated'},
             {slug: 'darksouls3', badge: 'Outdated'},
             {slug: 'demonssouls', badge: 'Outdated'},
             {slug: 'desremake', badge: 'Outdated'},
-            {label: 'Demon\'s Souls (2020)', autogenerate: {directory: 'demonssouls2020'}, badge: {text: 'New', variant: 'success'}},
             {slug: 'ds1remaster', badge: 'Outdated'},
             {slug: 'ds2sotfs', badge: 'Outdated'},
             {slug: 'eldenring', badge: 'Outdated'},
