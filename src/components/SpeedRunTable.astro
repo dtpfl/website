@@ -2,10 +2,12 @@
 export interface Props {
 	game: string;
 	category?: string; // Can be either category ID or category name
-	showCategorySelector?: boolean; // Controls visibility of category dropdown
 }
 
-const { game, category, showCategorySelector = false } = Astro.props;
+const { game, category } = Astro.props;
+
+// Build time constant - this will be evaluated when Astro builds the site
+const BUILD_TIME = new Date().toISOString();
 
 // Type definitions
 interface Category {
@@ -15,10 +17,11 @@ interface Category {
 
 interface SpeedrunRun {
 	player: string;
+	playerId: string;
 	igt: string;
 	date: string;
 	platform: string;
-	category?: string; // Optional since it's not displayed in table
+	videoUrl?: string;
 }
 
 // Game ID mapping
@@ -47,7 +50,6 @@ const GAME_CATEGORIES: Record<string, Category[]> = {
 		{ id: "mkey0882", name: "Any% No Wrong Warp (Archived)" },
 		{ id: "wdmrgrxk", name: "Deprecated" }
 	],
-	// Add other games' categories as needed
 	bloodborne: [
 		{ id: "wk6l0pk1", name: "Any% Current Patch" },
 		{ id: "xd1rqzrk", name: "All Bosses" },
@@ -125,6 +127,10 @@ const selectedCategory = category ? categories.find(cat =>
 	cat.id === category || cat.name === category
 ) : null;
 
+// If category is provided but not found in predefined categories, create a fallback
+const fallbackCategory = category && !selectedCategory ? { id: category, name: category } : null;
+const effectiveCategory = selectedCategory || fallbackCategory;
+
 // Helper function to get platform names
 const getPlatformName = async (platformId: string): Promise<string> => {
 	try {
@@ -139,204 +145,208 @@ const getPlatformName = async (platformId: string): Promise<string> => {
 	return platformId;
 };
 
-// Fetch real data from Speedrun.com API
+// Fetch real data from Speedrun.com API using leaderboards
 const getSpeedrunData = async (gameId: string, categoryId?: string): Promise<SpeedrunRun[]> => {
 	try {
-		// Build the API URL with filters
-		const baseUrl = 'https://www.speedrun.com/api/v1/runs';
+		if (!categoryId) {
+			return [];
+		}
+
+		// Build the API URL for leaderboards
+		const apiUrl = `https://www.speedrun.com/api/v1/leaderboards/${gameId}/category/${categoryId}`;
+		
+		// Add query parameters for leaderboard
 		const params = new URLSearchParams({
-			game: gameId,
-			status: 'verified', // Only show verified runs
-			orderby: 'date',
-			direction: 'desc',
-			max: '20', // Limit to top 20 runs
-			embed: 'players' // Embed full player information
+			top: '10', // Only return top 10 places
+			embed: 'players,platforms' // Embed players and platforms for better data
 		});
 		
-		// Add category filter if specified
-		if (categoryId) {
-			params.append('category', categoryId);
-		}
-		
-		const response = await fetch(`${baseUrl}?${params}`);
+		const response = await fetch(`${apiUrl}?${params}`);
 		
 		if (!response.ok) {
-			console.error(`Failed to fetch data: ${response.status}`);
+			console.error(`Failed to fetch leaderboard data: ${response.status}`);
 			return [];
 		}
 		
 		const data = await response.json();
 		
-		// Debug: Log the first run to see the structure
-		if (data.data && data.data.length > 0) {
-			console.log('First run data:', JSON.stringify(data.data[0], null, 2));
-		}
-		
-		// Transform the API response to our format
+		// Transform the leaderboard response to our format
 		const transformedRuns = [];
 		
-		for (const run of data.data) {
-			// Extract player name(s)
-			let playerName = 'Unknown';
-			if (run.players && run.players.length > 0) {
-				const players = run.players.map((p: any) => {
-					if (p.rel === 'user' && p.names) {
-						return p.names.international || p.names.japanese || 'Unknown';
-					} else if (p.rel === 'guest' && p.name) {
-						return p.name;
-					}
-					return 'Unknown';
-				});
-				playerName = players.join(', ');
-			}
-			
-			// Format the time
-			let formattedTime = 'Unknown';
-			if (run.times) {
-				// Try ingame time first, fall back to primary time if ingame is null
-				let timeInSeconds = 0;
-				if (run.times.ingame && run.times.ingame_t) {
-					timeInSeconds = run.times.ingame_t;
-				} else if (run.times.primary && run.times.primary_t) {
-					timeInSeconds = run.times.primary_t;
+		if (data.data && data.data.runs) {
+			for (const runEntry of data.data.runs) {
+				const run = runEntry.run;
+				
+				// Extract player name(s) from the embedded players data
+				let playerName = 'Unknown';
+				let playerId = null;
+				
+				// First try to get player from the run's players array (basic player info)
+				if (run.players && run.players.length > 0) {
+					playerId = run.players[0].id;
 				}
 				
-				if (timeInSeconds > 0) {
-					const hours = Math.floor(timeInSeconds / 3600);
-					const minutes = Math.floor((timeInSeconds % 3600) / 60);
-					const seconds = timeInSeconds % 60;
-					
-					if (hours > 0) {
-						formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-					} else {
-						formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+				// Then look up the full player details from the embedded players data
+				if (playerId && data.data.players && data.data.players.data) {
+					const player = data.data.players.data.find((p: any) => p.id === playerId);
+					if (player && player.names) {
+						playerName = player.names.international || player.names.japanese || 'Unknown';
 					}
 				}
+				
+				// Format the time based on leaderboard timing
+				let formattedTime = 'Unknown';
+				if (run.times) {
+					let timeInSeconds = 0;
+					
+					// Use the timing method specified by the leaderboard
+					if (data.data.timing === 'ingame' && run.times.ingame_t) {
+						timeInSeconds = run.times.ingame_t;
+					} else if (data.data.timing === 'realtime' && run.times.primary_t) {
+						timeInSeconds = run.times.primary_t;
+					} else if (data.data.timing === 'realtime_noloads' && run.times.realtime_noloads_t) {
+						timeInSeconds = run.times.realtime_noloads_t;
+					} else if (run.times.primary_t) {
+						// Fallback to primary time
+						timeInSeconds = run.times.primary_t;
+					}
+					
+					if (timeInSeconds > 0) {
+						const hours = Math.floor(timeInSeconds / 3600);
+						const minutes = Math.floor((timeInSeconds % 3600) / 60);
+						const seconds = timeInSeconds % 60;
+						
+						if (hours > 0) {
+							formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+						} else {
+							formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+						}
+					}
+				}
+				
+				// Format the date
+				let formattedDate = 'Unknown';
+				if (run.date) {
+					const date = new Date(run.date);
+					formattedDate = date.toLocaleDateString();
+				}
+				
+				// Get platform name from embedded data
+				let platformName = 'Unknown';
+				if (run.system && run.system.platform) {
+					// Try to get platform name from embedded platforms data first
+					if (data.data.platforms && data.data.platforms.data) {
+						const platform = data.data.platforms.data.find((p: any) => p.id === run.system.platform);
+						if (platform) {
+							platformName = platform.name;
+						} else {
+							// Fallback to API call if not found in embedded data
+							platformName = await getPlatformName(run.system.platform);
+						}
+					} else {
+						// Fallback to API call if no embedded platforms
+						platformName = await getPlatformName(run.system.platform);
+					}
+				}
+				
+				// Get video URL from the run
+				let videoUrl = null;
+				if (run.videos && run.videos.links && run.videos.links.length > 0) {
+					videoUrl = run.videos.links[0].uri;
+				}
+				
+				transformedRuns.push({
+					player: playerName,
+					playerId: playerId || 'unknown',
+					igt: formattedTime,
+					date: formattedDate,
+					platform: platformName,
+					videoUrl: videoUrl
+				});
 			}
-			
-			// Format the date
-			let formattedDate = 'Unknown';
-			if (run.date) {
-				const date = new Date(run.date);
-				formattedDate = date.toLocaleDateString();
-			}
-			
-			// Get platform name
-			let platformName = 'Unknown';
-			if (run.system && run.system.platform) {
-				platformName = await getPlatformName(run.system.platform);
-			}
-			
-			transformedRuns.push({
-				player: playerName,
-				igt: formattedTime,
-				date: formattedDate,
-				platform: platformName
-			});
 		}
 		
 		return transformedRuns;
 		
 	} catch (error) {
-		console.error('Error fetching speedrun data:', error);
+		console.error('Error fetching leaderboard data:', error);
 		return [];
 	}
 };
 
+// Fetch speedrun data
 let runs: SpeedrunRun[] = [];
 try {
-	runs = await getSpeedrunData(gameId, selectedCategory?.id);
+	runs = await getSpeedrunData(gameId, effectiveCategory?.id);
 } catch (error) {
 	console.error('Failed to fetch speedrun data:', error);
-	// Fallback to empty array - could also show an error message
 }
 ---
 
-	<div class="speedrun-table-container">
-		<!-- Category selector if enabled and categories exist -->
-		{showCategorySelector && categories.length > 0 && (
-			<div class="category-selector">
-				<label for="category-select">Category:</label>
-				<select id="category-select" class="category-dropdown">
-					<option value="" selected={!selectedCategory}>All Categories</option>
-					{categories.map((cat: Category) => (
-						<option value={cat.id} selected={selectedCategory?.id === cat.id}>
-							{cat.name}
-						</option>
-					))}
-				</select>
+<div class="speedrun-table-container">	
+	<div class="custom-table">
+		<div class="table-header">
+			<div class="header-cell">Pos.</div>
+			<div class="header-cell">Player</div>
+			<div class="header-cell">Date</div>
+			<div class="header-cell">Platform</div>
+			<div class="header-cell">IGT</div>
+		</div>
+		
+		{!effectiveCategory ? (
+			<div class="table-row">
+				<div class="table-cell no-data" style="text-align: center; padding: 2rem;">
+					Please select a category to view speedrun data.
+				</div>
+			</div>
+		) : runs.length > 0 ? (
+			runs.map((run, index) => (
+				<div class="table-row">
+					<div class="table-cell position-cell">
+						<span class={`position-number ${index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : ''}`}>
+							{index + 1}.
+						</span>
+					</div>
+					<div class="table-cell">
+						{run.videoUrl ? (
+							<a href={run.videoUrl} target="_blank" rel="noopener noreferrer" class="player-link">
+								{run.player}
+							</a>
+						) : (
+							<span>{run.player}</span>
+						)}
+					</div>
+					<div class="table-cell">{run.date}</div>
+					<div class="table-cell">{run.platform}</div>
+					<div class="table-cell">{run.igt}</div>
+				</div>
+			))
+		) : (
+			<div class="table-row">
+				<div class="table-cell no-data" style="text-align: center; padding: 2rem;">
+					No speedrun data available for this category.
+				</div>
 			</div>
 		)}
-		
-		<div class="custom-table">
-			<div class="table-header">
-				<div class="header-cell">Pos.</div>
-				<div class="header-cell">Player</div>
-				<div class="header-cell">Date</div>
-				<div class="header-cell">Platform</div>
-				<div class="header-cell">IGT</div>
-			</div>
-			
-			{runs.length > 0 ? (
-				runs.map((run, index) => (
-					<div class="table-row">
-						<div class="table-cell position-cell">
-							<span class={`position-number ${index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : ''}`}>
-								{index + 1}.
-							</span>
-						</div>
-						<div class="table-cell">{run.player}</div>
-						<div class="table-cell">{run.date}</div>
-						<div class="table-cell">{run.platform}</div>
-						<div class="table-cell">{run.igt}</div>
-					</div>
-				))
+	</div>
+	
+	{/* Leaderboard info */}
+	<div class="leaderboard-info">
+		<div class="info-text">
+			{effectiveCategory ? (
+				<>
+					Showing top 10 verified runs from <a href={`https://www.speedrun.com/${game}`} target="_blank" rel="noopener noreferrer">Speedrun.com leaderboards</a> for {effectiveCategory.name}. Data fetched on {new Date(BUILD_TIME).toLocaleString()}.
+				</>
 			) : (
-				<div class="table-row">
-					<div class="table-cell no-data" style="text-align: center; padding: 2rem;">
-						No speedrun data available for this game/category.
-					</div>
-				</div>
+				'Select a category to view speedrun leaderboards'
 			)}
 		</div>
-		
-		<div style="background: var(--sl-color-gray-3); border-radius: 4px;">
-			<a href="https://speedrun.com" target="_blank" rel="noopener noreferrer"><img src="/pages/assets/speedrun.svg" alt="Speedrun.com" style="height: 32px; width: auto;  padding: 0.5rem 1rem;" /></a>
-		</div>
 	</div>
+</div>
 
-<script>
-	// Handle category selection
-	document.addEventListener('DOMContentLoaded', () => {
-		const categorySelect = document.getElementById('category-select') as HTMLSelectElement;
-		if (categorySelect) {
-			categorySelect.addEventListener('change', (e) => {
-				const target = e.target as HTMLSelectElement;
-				const selectedCategory = target.value;
-				
-				if (selectedCategory === '') {
-					// All Categories selected
-					console.log('Selected category: All Categories');
-					// In a real implementation, you would fetch data for all categories
-				} else {
-					// Specific category selected
-					console.log('Selected category:', selectedCategory);
-					// In a real implementation, you would fetch data for the specific category
-				}
-				
-				// You could also update the URL or trigger a page refresh with the new category
-			});
-		}
-	});
-</script>
+
 
 <style>
-	.category-selector {
-		margin-bottom: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
 
 	.custom-table {
 		width: 100%;
@@ -402,11 +412,5 @@ try {
 		color: #cd7f32;
 	}
 	
-	.no-data {
-		text-align: center;
-		padding: 2rem;
-		color: var(--sl-color-gray-6);
-		font-style: italic;
-	}
 </style>
 
