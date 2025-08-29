@@ -125,48 +125,131 @@ const selectedCategory = category ? categories.find(cat =>
 	cat.id === category || cat.name === category
 ) : null;
 
-// Sample data structure - in a real implementation, this would be fetched from an API
-const getSpeedrunData = (gameId: string, categoryId?: string): SpeedrunRun[] => {
-	// This is placeholder data - in production you'd fetch from speedrun.com API
-	const sampleData: Record<string, SpeedrunRun[]> = {
-		"nd28z0ed": [ // eldenring
-			{
-				player: "Lorem Ipsum Dolor Sit Amet Amet adadasdas asdasdasdasdsa asdsad",
-				igt: "18:49",
-				date: "2024-01-15",
-				platform: "PS4"
-			},
-			{
-				player: "theworld0815",
-				igt: "22:12",
-				date: "2024-01-14",
-				platform: "PS4"
-			},
-			{
-				player: "Marchyy",
-				igt: "26:23",
-				date: "2024-01-13",
-				platform: "PS4"
-			},
-			{
-				player: "lGenso",
-				igt: "20:00",
-				date: "2024-01-13",
-				platform: "PS4"
-			},
-			{
-				player: "lGenso",
-				igt: "20:00",
-				date: "2024-01-13",
-				platform: "PS4"
-			}
-		],
-	};
-	
-	return sampleData[gameId] || [];
+// Helper function to get platform names
+const getPlatformName = async (platformId: string): Promise<string> => {
+	try {
+		const response = await fetch(`https://www.speedrun.com/api/v1/platforms/${platformId}`);
+		if (response.ok) {
+			const data = await response.json();
+			return data.data.name || platformId;
+		}
+	} catch (error) {
+		console.error('Error fetching platform name:', error);
+	}
+	return platformId;
 };
 
-const runs = getSpeedrunData(gameId, category);
+// Fetch real data from Speedrun.com API
+const getSpeedrunData = async (gameId: string, categoryId?: string): Promise<SpeedrunRun[]> => {
+	try {
+		// Build the API URL with filters
+		const baseUrl = 'https://www.speedrun.com/api/v1/runs';
+		const params = new URLSearchParams({
+			game: gameId,
+			status: 'verified', // Only show verified runs
+			orderby: 'date',
+			direction: 'desc',
+			max: '20', // Limit to top 20 runs
+			embed: 'players' // Embed full player information
+		});
+		
+		// Add category filter if specified
+		if (categoryId) {
+			params.append('category', categoryId);
+		}
+		
+		const response = await fetch(`${baseUrl}?${params}`);
+		
+		if (!response.ok) {
+			console.error(`Failed to fetch data: ${response.status}`);
+			return [];
+		}
+		
+		const data = await response.json();
+		
+		// Debug: Log the first run to see the structure
+		if (data.data && data.data.length > 0) {
+			console.log('First run data:', JSON.stringify(data.data[0], null, 2));
+		}
+		
+		// Transform the API response to our format
+		const transformedRuns = [];
+		
+		for (const run of data.data) {
+			// Extract player name(s)
+			let playerName = 'Unknown';
+			if (run.players && run.players.length > 0) {
+				const players = run.players.map((p: any) => {
+					if (p.rel === 'user' && p.names) {
+						return p.names.international || p.names.japanese || 'Unknown';
+					} else if (p.rel === 'guest' && p.name) {
+						return p.name;
+					}
+					return 'Unknown';
+				});
+				playerName = players.join(', ');
+			}
+			
+			// Format the time
+			let formattedTime = 'Unknown';
+			if (run.times) {
+				// Try ingame time first, fall back to primary time if ingame is null
+				let timeInSeconds = 0;
+				if (run.times.ingame && run.times.ingame_t) {
+					timeInSeconds = run.times.ingame_t;
+				} else if (run.times.primary && run.times.primary_t) {
+					timeInSeconds = run.times.primary_t;
+				}
+				
+				if (timeInSeconds > 0) {
+					const hours = Math.floor(timeInSeconds / 3600);
+					const minutes = Math.floor((timeInSeconds % 3600) / 60);
+					const seconds = timeInSeconds % 60;
+					
+					if (hours > 0) {
+						formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+					} else {
+						formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+					}
+				}
+			}
+			
+			// Format the date
+			let formattedDate = 'Unknown';
+			if (run.date) {
+				const date = new Date(run.date);
+				formattedDate = date.toLocaleDateString();
+			}
+			
+			// Get platform name
+			let platformName = 'Unknown';
+			if (run.system && run.system.platform) {
+				platformName = await getPlatformName(run.system.platform);
+			}
+			
+			transformedRuns.push({
+				player: playerName,
+				igt: formattedTime,
+				date: formattedDate,
+				platform: platformName
+			});
+		}
+		
+		return transformedRuns;
+		
+	} catch (error) {
+		console.error('Error fetching speedrun data:', error);
+		return [];
+	}
+};
+
+let runs: SpeedrunRun[] = [];
+try {
+	runs = await getSpeedrunData(gameId, selectedCategory?.id);
+} catch (error) {
+	console.error('Failed to fetch speedrun data:', error);
+	// Fallback to empty array - could also show an error message
+}
 ---
 
 	<div class="speedrun-table-container">
@@ -194,19 +277,27 @@ const runs = getSpeedrunData(gameId, category);
 				<div class="header-cell">IGT</div>
 			</div>
 			
-			{runs.map((run, index) => (
-				<div class="table-row">
-					<div class="table-cell position-cell">
-						<span class={`position-number ${index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : ''}`}>
-							{index + 1}.
-						</span>
+			{runs.length > 0 ? (
+				runs.map((run, index) => (
+					<div class="table-row">
+						<div class="table-cell position-cell">
+							<span class={`position-number ${index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : ''}`}>
+								{index + 1}.
+							</span>
+						</div>
+						<div class="table-cell">{run.player}</div>
+						<div class="table-cell">{run.date}</div>
+						<div class="table-cell">{run.platform}</div>
+						<div class="table-cell">{run.igt}</div>
 					</div>
-					<div class="table-cell">{run.player}</div>
-					<div class="table-cell">{run.date}</div>
-					<div class="table-cell">{run.platform}</div>
-					<div class="table-cell">{run.igt}</div>
+				))
+			) : (
+				<div class="table-row">
+					<div class="table-cell no-data" style="text-align: center; padding: 2rem;">
+						No speedrun data available for this game/category.
+					</div>
 				</div>
-			))}
+			)}
 		</div>
 		
 		<div style="background: var(--sl-color-gray-3); border-radius: 4px;">
@@ -309,6 +400,13 @@ const runs = getSpeedrunData(gameId, category);
 	
 	.position-number.bronze {
 		color: #cd7f32;
+	}
+	
+	.no-data {
+		text-align: center;
+		padding: 2rem;
+		color: var(--sl-color-gray-6);
+		font-style: italic;
 	}
 </style>
 
