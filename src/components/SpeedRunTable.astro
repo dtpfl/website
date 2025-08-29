@@ -2,9 +2,10 @@
 export interface Props {
 	game: string;
 	category?: string; // Can be either category ID or category name
+	subcategories?: string; // Subcategory name for games that support it
 }
 
-const { game, category } = Astro.props;
+const { game, category, subcategories } = Astro.props;
 
 // Build time constant - this will be evaluated when Astro builds the site
 const BUILD_TIME = new Date().toISOString();
@@ -13,6 +14,11 @@ const BUILD_TIME = new Date().toISOString();
 interface Category {
 	id: string;
 	name: string;
+	subcategories?: {
+		id: string; // Variable ID (e.g., "ylp6e5jn")
+		name: string; // Display name (e.g., "Unrestricted", "No Bow Tech")
+		value: string; // Variable value ID (e.g., "p12j9xkq", "81pkedkl")
+	}[];
 }
 
 interface SpeedrunRun {
@@ -109,6 +115,10 @@ const GAME_CATEGORIES: Record<string, Category[]> = {
 		{ id: "xd11mjzd", name: "All Achievements" }
 	],
 	desremake: [
+		{ id: "5dw60g52", name: "Any%", subcategories: [
+			{ id: "ylp6e5jn", name: "Unrestricted", value: "p12j9xkq" },
+			{ id: "ylp6e5jn", name: "No Bow Tech", value: "81pkedkl" }
+		]},
 		{ id: "rkl3386k", name: "Any% Glitchless" },
 		{ id: "z274l4g2", name: "Any% Force Quit" },
 		{ id: "vdoxoj1d", name: "Any% SL1" },
@@ -126,6 +136,14 @@ const categories = GAME_CATEGORIES[game.toLowerCase()] || [];
 const selectedCategory = category ? categories.find(cat => 
 	cat.id === category || cat.name === category
 ) : null;
+
+// If subcategories is specified, find the subcategory
+let selectedSubcategory = null;
+if (selectedCategory && subcategories && selectedCategory.subcategories) {
+	selectedSubcategory = selectedCategory.subcategories.find(sub => 
+		sub.name === subcategories
+	);
+}
 
 // If category is provided but not found in predefined categories, create a fallback
 const fallbackCategory = category && !selectedCategory ? { id: category, name: category } : null;
@@ -146,7 +164,7 @@ const getPlatformName = async (platformId: string): Promise<string> => {
 };
 
 // Fetch real data from Speedrun.com API using leaderboards
-const getSpeedrunData = async (gameId: string, categoryId?: string): Promise<SpeedrunRun[]> => {
+const getSpeedrunData = async (gameId: string, categoryId?: string, subcategoryVariable?: { id: string, value: string }): Promise<SpeedrunRun[]> => {
 	try {
 		if (!categoryId) {
 			return [];
@@ -160,6 +178,11 @@ const getSpeedrunData = async (gameId: string, categoryId?: string): Promise<Spe
 			top: '10', // Only return top 10 places
 			embed: 'players,platforms' // Embed players and platforms for better data
 		});
+		
+		// Add subcategory variable if specified (e.g., var-ylp6e5jn=81pkedkl)
+		if (subcategoryVariable) {
+			params.set(`var-${subcategoryVariable.id}`, subcategoryVariable.value);
+		}
 		
 		const response = await fetch(`${apiUrl}?${params}`);
 		
@@ -277,7 +300,9 @@ const getSpeedrunData = async (gameId: string, categoryId?: string): Promise<Spe
 // Fetch speedrun data
 let runs: SpeedrunRun[] = [];
 try {
-	runs = await getSpeedrunData(gameId, effectiveCategory?.id);
+	// If we have a selected subcategory, pass the variable information
+	const subcategoryVariable = selectedSubcategory ? { id: selectedSubcategory.id, value: selectedSubcategory.value } : undefined;
+	runs = await getSpeedrunData(gameId, effectiveCategory?.id, subcategoryVariable);
 } catch (error) {
 	console.error('Failed to fetch speedrun data:', error);
 }
@@ -387,6 +412,7 @@ try {
 	
 	.header-cell:nth-child(4), .table-cell:nth-child(4) { /* Platform */
 		width: auto;
+		min-width: 150px;
 	}
 	
 	.header-cell:nth-child(5), .table-cell:nth-child(5) { /* IGT */
